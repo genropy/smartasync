@@ -105,13 +105,13 @@ async def test_async_context():
     assert obj.call_count == 2
     print("   ✓ Works!")
 
-    # Call sync method
-    print("\n3. Calling sync_method()...")
-    result = obj.sync_method("sync")
+    # Call sync method (now requires await in async context!)
+    print("\n3. Calling sync_method() with await...")
+    result = await obj.sync_method("sync")
     print(f"   Result: {result}")
     assert result == "Sync: sync"
     assert obj.call_count == 3
-    print("   ✓ Sync method works!")
+    print("   ✓ Sync method works (offloaded to thread)!")
 
     print("\n✅ ASYNC CONTEXT TEST PASSED!")
 
@@ -293,6 +293,55 @@ async def test_sync_to_async_transition():
     print("\n✅ SYNC→ASYNC TRANSITION TEST PASSED!")
 
 
+async def test_bidirectional_scenario_a2():
+    """Test Scenario A2: Async app calling sync legacy library.
+
+    This demonstrates the bidirectional capability where sync methods
+    are automatically offloaded to threads when called from async context.
+    """
+    print("\n" + "="*60)
+    print("TEST 10: Bidirectional - Async App → Sync Library")
+    print("="*60)
+
+    class LegacyLibrary:
+        """Simulates a sync legacy library."""
+
+        def __init__(self):
+            self.processed = []
+
+        @smartasync
+        def blocking_operation(self, data: str) -> str:
+            """Sync blocking operation (e.g., CPU-bound processing)."""
+            import time
+            time.sleep(0.01)  # Simulate blocking work
+            result = data.upper()
+            self.processed.append(result)
+            return result
+
+    print("\n1. Create async app with legacy library...")
+    lib = LegacyLibrary()
+    print("   ✓ Library instantiated")
+
+    print("\n2. Call sync method from async context (auto-threaded)...")
+    result = await lib.blocking_operation("legacy")
+    assert result == "LEGACY"
+    assert "LEGACY" in lib.processed
+    print(f"   ✓ Result: {result} (executed in thread pool)")
+
+    print("\n3. Multiple concurrent calls (won't block event loop)...")
+    import asyncio
+    results = await asyncio.gather(
+        lib.blocking_operation("item1"),
+        lib.blocking_operation("item2"),
+        lib.blocking_operation("item3"),
+    )
+    assert results == ["ITEM1", "ITEM2", "ITEM3"]
+    print(f"   ✓ Processed {len(results)} items concurrently")
+
+    print("\n✅ BIDIRECTIONAL A2 TEST PASSED!")
+    print("   🎯 Sync legacy code works seamlessly in async context!")
+
+
 if __name__ == "__main__":
     # Test sync context
     test_sync_context()
@@ -321,6 +370,9 @@ if __name__ == "__main__":
     # Test sync to async transition
     asyncio.run(test_sync_to_async_transition())
 
+    # Test bidirectional scenario A2
+    asyncio.run(test_bidirectional_scenario_a2())
+
     print("\n" + "="*60)
     print("🎉 ALL TESTS PASSED!")
     print("="*60)
@@ -330,8 +382,9 @@ if __name__ == "__main__":
     print("✅ Works with __slots__")
     print("✅ Asymmetric caching works correctly")
     print("✅ Cache reset available")
-    print("✅ Sync methods pass through")
+    print("✅ BIDIRECTIONAL: Async methods work in sync context (asyncio.run)")
+    print("✅ BIDIRECTIONAL: Sync methods work in async context (asyncio.to_thread)")
     print("✅ Error propagation works correctly")
     print("✅ Cache is per-method (shared between instances)")
     print("✅ Sync→Async transitions work")
-    print("\n🚀 READY FOR USE!")
+    print("\n🚀 READY FOR USE - FULLY BIDIRECTIONAL!")

@@ -1,0 +1,195 @@
+package: smartasync
+version: 0.1.0
+last_updated: 2025-11-10
+python_requires: ">=3.10"
+dependencies: []
+
+decorators:
+  smartasync:
+    brief: Bidirectional decorator for methods working in both sync and async contexts
+    location: src/smartasync/core.py
+
+    signature: "@smartasync"
+
+    applies_to:
+      - async methods (async def)
+      - sync methods (def)
+
+    behavior:
+      async_method_sync_context:
+        desc: Async method called from sync context (no event loop)
+        action: Executes with asyncio.run()
+        overhead: ~102μs
+        test_ref: tests/test_smartasync.py::test_sync_context
+
+      async_method_async_context:
+        desc: Async method called from async context (event loop running)
+        action: Returns coroutine (must await)
+        overhead: ~1.3μs (cached) or ~2.3μs (first call)
+        test_ref: tests/test_smartasync.py::test_async_context
+
+      sync_method_sync_context:
+        desc: Sync method called from sync context
+        action: Direct call (pass-through)
+        overhead: negligible
+        test_ref: tests/test_smartasync.py::test_sync_context
+
+      sync_method_async_context:
+        desc: Sync method called from async context
+        action: Offloads to thread pool with asyncio.to_thread()
+        overhead: ~50-100μs
+        test_ref: tests/test_smartasync.py::test_bidirectional_scenario_a2
+
+    example_async: |
+      # From: tests/test_smartasync.py::test_sync_context
+      class Manager:
+          @smartasync
+          async def async_method(self, value: str) -> str:
+              await asyncio.sleep(0.01)
+              return f"Result: {value}"
+
+      # Sync usage (no await)
+      obj = Manager()
+      result = obj.async_method("test")  # "Result: test"
+
+      # Async usage (with await)
+      async def main():
+          result = await obj.async_method("test")
+
+    example_sync: |
+      # From: tests/test_smartasync.py::test_bidirectional_scenario_a2
+      class LegacyLib:
+          @smartasync
+          def blocking_operation(self, data: str) -> str:
+              time.sleep(0.01)  # Blocking sync code
+              return data.upper()
+
+      # Async usage (auto-threaded)
+      async def main():
+          lib = LegacyLib()
+          result = await lib.blocking_operation("test")  # "TEST"
+
+    caching:
+      strategy: Asymmetric
+      async_context: Cached forever once detected
+      sync_context: Always rechecked (never cached)
+      rationale: Can transition sync→async but not async→sync
+      cache_reset: method._smartasync_reset_cache()
+      test_ref: tests/test_smartasync.py::test_cache_reset
+
+    pattern_matching:
+      desc: Uses Python 3.10+ match statement for dispatch
+      cases:
+        - (False, True): Sync context + Async method → asyncio.run()
+        - (False, False): Sync context + Sync method → pass-through
+        - (True, True): Async context + Async method → return coroutine
+        - (True, False): Async context + Sync method → asyncio.to_thread()
+
+    error_handling:
+      propagation: Transparent - exceptions propagate normally
+      test_ref: tests/test_smartasync.py::test_error_propagation
+      example: |
+        @smartasync
+        async def buggy():
+            raise ValueError("error")
+
+        try:
+            result = buggy()  # Sync context
+        except ValueError:
+            pass  # Caught correctly
+
+    special_features:
+      slots_compatible:
+        desc: Works with __slots__ classes
+        test_ref: tests/test_smartasync.py::test_slots
+        example: |
+          class Optimized:
+              __slots__ = ('data',)
+
+              @smartasync
+              async def method(self):
+                  await asyncio.sleep(0.01)
+
+      cache_reset:
+        desc: Reset cache for testing
+        method: _smartasync_reset_cache()
+        test_ref: tests/test_smartasync.py::test_cache_reset
+        example: |
+          obj.method._smartasync_reset_cache()
+
+      per_method_cache:
+        desc: Cache is per-method (shared between instances)
+        implication: Not thread-safe with shared instances across threads
+        test_ref: tests/test_smartasync.py::test_cache_shared_between_instances
+
+performance:
+  decoration_time:
+    value: ~3-4μs
+    when: One-time at import
+
+  sync_context:
+    value: ~102μs
+    dominated_by: asyncio.run() loop creation/teardown
+    acceptable_for: CLI tools, single calls, I/O operations
+
+  async_context_first:
+    value: ~2.3μs
+    includes: Context detection + cache update
+
+  async_context_cached:
+    value: ~1.3μs
+    fast_path: Cache hit, no detection
+
+  async_sync_offload:
+    value: ~50-100μs
+    dominated_by: Thread pool submission
+    acceptable_for: Blocking I/O, CPU-bound work
+
+limitations:
+  python_version:
+    requirement: ">=3.10"
+    reason: Uses pattern matching (match/case)
+
+  no_async_to_sync_transition:
+    desc: Cannot transition from async context back to sync
+    reason: Event loop cannot be unwound
+    correct: This is correct behavior
+
+  thread_safety:
+    issue: Cache is per-method, not thread-safe
+    safe_patterns:
+      - Single-threaded apps (CLI, scripts)
+      - Async event loops (single-threaded by nature)
+      - Instance per thread/request
+    unsafe_pattern: Shared instance across multiple threads
+    mitigation: Create instance per thread or use thread-local storage
+
+  sync_context_overhead:
+    desc: Always rechecks context in sync mode
+    overhead: ~2μs per call
+    reason: Enables sync→async transition
+
+use_cases:
+  cli_async_libs:
+    desc: CLI tools using modern async libraries (httpx, aiohttp)
+    pattern: Call async methods without await in sync CLI
+    test_ref: tests/test_smartasync.py::test_sync_context
+
+  async_app_sync_libs:
+    desc: Async apps (FastAPI) using legacy sync libraries
+    pattern: Sync methods auto-threaded when awaited
+    test_ref: tests/test_smartasync.py::test_bidirectional_scenario_a2
+
+  unified_library_api:
+    desc: Single implementation for both sync and async users
+    pattern: Write async, works everywhere
+
+  testing:
+    desc: Test async code without event loop setup
+    pattern: Write sync tests for async methods
+
+common_patterns:
+  see: PATTERNS.md
+
+examples:
+  see: EXAMPLES.md

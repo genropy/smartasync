@@ -1,0 +1,105 @@
+site_name: SmartAsync
+site_description: Bidirectional sync/async bridge for Python
+site_url: https://smartasync.readthedocs.io
+repo_url: https://github.com/genropy/smartasync
+repo_name: genropy/smartasync
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: user-guide/installation.md
+    - Quick Start: user-guide/quickstart.md
+    - Basic Usage: user-guide/basic.md
+  - How It Works:
+    - Overview: how-it-works/index.md
+    - Sync → Async: how-it-works/sync-to-async.md
+    - Async → Sync: how-it-works/async-to-sync.md
+  - Usage Scenarios:
+    - Overview: scenarios/index.md
+    - Sync App → Async Libs: scenarios/01-sync-app-async-libs.md
+    - Async App → Sync Libs: scenarios/02-async-app-sync-libs.md
+    - Testing Async Code: scenarios/03-testing-async-code.md
+    - Unified Library API: scenarios/04-unified-library-api.md
+    - Gradual Migration: scenarios/05-gradual-migration.md
+    - Plugin Systems: scenarios/06-plugin-systems.md
+    - Mixed Frameworks: scenarios/07-mixed-framework.md
+    - Web Scraping: scenarios/08-web-scraping.md
+    - Interactive Environments: scenarios/09-interactive-environments.md
+  - API Reference:
+    - smartasync decorator: api/decorator.md
+  - Advanced:
+    - Technical Overview: advanced/technical-overview.md
+    - Comparison: advanced/comparison.md
+    - Performance: advanced/performance.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_signature_annotations: true
+            separate_signature: true
+            merge_init_into_class: true
+            docstring_section_style: spacy
+          inventories:
+            - https://docs.python.org/3/objects.inv
+      enable_inventory: true
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/genropy/smartasync

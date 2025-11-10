@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "smartasync"
-version = "0.1.0"
+version = "0.1.1"
 description = "Unified sync/async API decorator with automatic context detection"
 authors = [
     {name = "Giovanni Porcari", email = "softwell@softwell.it"},

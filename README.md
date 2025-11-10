@@ -5,6 +5,7 @@
 [![Part of Genro-Libs](https://img.shields.io/badge/Part%20of-Genro--Libs-blue)](https://github.com/softwell/genro-libs)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![LLM Docs](https://img.shields.io/badge/LLM-Docs-purple)](llm-docs/)
 
 SmartAsync allows you to write async methods once and call them in both sync and async contexts without modification. It automatically detects the execution context and adapts accordingly.
 
