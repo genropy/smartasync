@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "smartasync"
-version = "0.1.1"
+version = "0.2.0"
 description = "Unified sync/async API decorator with automatic context detection"
 authors = [
     {name = "Giovanni Porcari", email = "softwell@softwell.it"},
@@ -13,7 +13,7 @@ readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.10"
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
