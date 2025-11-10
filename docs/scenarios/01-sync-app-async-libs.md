@@ -149,7 +149,7 @@ async def process():
 
 ## Issues Impact on This Scenario
 
-Based on [SCENARIOS-IMPACT-MATRIX.md](../SCENARIOS-IMPACT-MATRIX.md), here are the issues affecting Scenario A1:
+Here are the issues affecting this scenario:
 
 ### Issue #1: `_sync_mode` Ignored
 
@@ -621,17 +621,16 @@ Before using SmartAsync in Scenario A1, verify:
 
 ## Related Scenarios
 
-- [A2: Async App → Sync Libs](A2-async-app-sync-libs.md) - Opposite direction
-- [A3: Dual-Mode Framework](A3-dual-mode-framework.md) - CLI + API
-- [B1: Async Lib → Universal](../libraries/B1-async-lib-universal.md) - Library author perspective
+- [02: Async App → Sync Libs](02-async-app-sync-libs.md) - Opposite direction
+- [04: Unified Library API](04-unified-library-api.md) - Library author perspective
+- [05: Gradual Migration](05-gradual-migration.md) - Migration strategies
 
 ---
 
 ## Further Reading
 
-- [SCENARIOS-IMPACT-MATRIX.md](../SCENARIOS-IMPACT-MATRIX.md) - Issues impact across all scenarios
-- [TECH-REPORT.md](../../TECH-REPORT.md) - Technical deep dive
-- [Issue #2: Thread Safety](https://github.com/genropy/smartasync/issues/2) - Thread safety discussion
+- [Technical Overview](../advanced/technical-overview.md) - Technical deep dive
+- [Comparison](../advanced/comparison.md) - Comparison with alternatives
 
 ---
 

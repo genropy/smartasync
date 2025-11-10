@@ -318,4 +318,4 @@ async def get_users():
 
 - [Sync → Async](sync-to-async.md) - Opposite direction
 - [Scenario 02](../scenarios/02-async-app-sync-libs.md) - Practical examples
-- [BIDIRECTIONAL-IMPLEMENTATION.md](../../BIDIRECTIONAL-IMPLEMENTATION.md) - Design decisions
+- [Technical Overview](../advanced/technical-overview.md) - Design decisions

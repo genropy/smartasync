@@ -69,8 +69,8 @@ match (async_context, async_method):
 
 ## Related Documentation
 
-- [Scenarios](../scenarios/) - Real-world use cases
-- [Comparison with Alternatives](../comparison-with-alternatives.md)
-- [BIDIRECTIONAL-IMPLEMENTATION.md](../../BIDIRECTIONAL-IMPLEMENTATION.md)
+- [Scenarios](../scenarios/index.md) - Real-world use cases
+- [Comparison with Alternatives](../advanced/comparison.md)
+- [Technical Overview](../advanced/technical-overview.md)
 
 **Last Updated**: 2025-11-10
