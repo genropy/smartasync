@@ -1,4 +1,4 @@
-# SmartSync
+# SmartAsync
 
 **Unified sync/async API decorator with automatic context detection**
 
@@ -6,12 +6,12 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-SmartSync allows you to write async methods once and call them in both sync and async contexts without modification. It automatically detects the execution context and adapts accordingly.
+SmartAsync allows you to write async methods once and call them in both sync and async contexts without modification. It automatically detects the execution context and adapts accordingly.
 
 ## Features
 
 - ✅ **Automatic context detection**: Detects sync vs async execution context at runtime
-- ✅ **Zero configuration**: Just apply the `@smartsync` decorator
+- ✅ **Zero configuration**: Just apply the `@smartasync` decorator
 - ✅ **Asymmetric caching**: Smart caching strategy for optimal performance
 - ✅ **Compatible with `__slots__`**: Works with memory-optimized classes
 - ✅ **Pure Python**: No dependencies beyond standard library
@@ -19,17 +19,17 @@ SmartSync allows you to write async methods once and call them in both sync and 
 ## Installation
 
 ```bash
-pip install smartsync
+pip install smartasync
 ```
 
 ## Quick Start
 
 ```python
-from smartsync import smartsync
+from smartasync import smartasync
 import asyncio
 
 class DataManager:
-    @smartsync
+    @smartasync
     async def fetch_data(self, url: str):
         """Fetch data - works in both sync and async contexts!"""
         async with httpx.AsyncClient() as client:
@@ -50,14 +50,14 @@ asyncio.run(main())
 
 ## How It Works
 
-SmartSync uses `asyncio.get_running_loop()` to detect the execution context:
+SmartAsync uses `asyncio.get_running_loop()` to detect the execution context:
 
 - **Sync context** (no event loop): Executes with `asyncio.run()`
 - **Async context** (event loop running): Returns coroutine to be awaited
 
 ### Asymmetric Caching
 
-SmartSync uses an intelligent caching strategy:
+SmartAsync uses an intelligent caching strategy:
 - ✅ **Async context detected**: Cached forever (can't transition from async to sync)
 - ⚠️ **Sync context**: Always rechecked (can transition from sync to async)
 
@@ -68,14 +68,14 @@ This ensures correct behavior while optimizing for the most common case (async c
 ### 1. CLI + HTTP API
 
 ```python
-from smartsync import smartsync
+from smartasync import smartasync
 from smpub import PublishedClass, ApiSwitcher
 
 class DataHandler(PublishedClass):
     api = ApiSwitcher()
 
     @api
-    @smartsync
+    @smartasync
     async def process_data(self, input_file: str):
         """Process data file."""
         async with aiofiles.open(input_file) as f:
@@ -93,7 +93,7 @@ result = handler.process_data("data.csv")
 ### 2. Testing
 
 ```python
-@smartsync
+@smartasync
 async def database_query(query: str):
     async with database.connect() as conn:
         return await conn.execute(query)
@@ -126,19 +126,19 @@ For typical CLI tools and web APIs, this overhead is negligible compared to netw
 
 ### With `__slots__`
 
-SmartSync works seamlessly with `__slots__` classes:
+SmartAsync works seamlessly with `__slots__` classes:
 
 ```python
-from smartsync import SmartSync, smartsync
+from smartasync import SmartAsync, smartasync
 
-class OptimizedManager(SmartSync):
+class OptimizedManager(SmartAsync):
     __slots__ = ('data',)  # No __weakref__ needed!
 
     def __init__(self):
-        SmartSync.__init__(self, _sync=False)
+        SmartAsync.__init__(self, _sync=False)
         self.data = []
 
-    @smartsync
+    @smartasync
     async def add_item(self, item):
         await asyncio.sleep(0.01)  # Simulate I/O
         self.data.append(item)
@@ -147,12 +147,12 @@ class OptimizedManager(SmartSync):
 ### Cache Reset for Testing
 
 ```python
-@smartsync
+@smartasync
 async def my_method():
     pass
 
 # Reset cache between tests
-my_method._smartsync_reset_cache()
+my_method._smartasync_reset_cache()
 ```
 
 ## Limitations
@@ -162,10 +162,10 @@ my_method._smartsync_reset_cache()
 
 ## Related Projects
 
-SmartSync is part of the **Genro-Libs toolkit**:
+SmartAsync is part of the **Genro-Libs toolkit**:
 
 - [smartswitch](https://github.com/genropy/smartswitch) - Rule-based function dispatch
-- [smpub](https://github.com/genropy/smpub) - CLI/API framework (uses SmartSync for async handlers)
+- [smpub](https://github.com/genropy/smpub) - CLI/API framework (uses SmartAsync for async handlers)
 - [gtext](https://github.com/genropy/gtext) - Text transformation and templates
 
 ## Contributing
