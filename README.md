@@ -2,9 +2,13 @@
 
 **Unified sync/async API decorator with automatic context detection**
 
-[![Part of Genro-Libs](https://img.shields.io/badge/Part%20of-Genro--Libs-blue)](https://github.com/softwell/genro-libs)
+[![PyPI version](https://img.shields.io/pypi/v/smartasync.svg)](https://pypi.org/project/smartasync/)
+[![Tests](https://github.com/genropy/smartasync/actions/workflows/test.yml/badge.svg)](https://github.com/genropy/smartasync/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/genropy/smartasync/branch/main/graph/badge.svg)](https://codecov.io/gh/genropy/smartasync)
+[![Documentation Status](https://readthedocs.org/projects/smartasync/badge/?version=latest)](https://smartasync.readthedocs.io/en/latest/?badge=latest)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Part of Genro-Libs](https://img.shields.io/badge/Part%20of-Genro--Libs-blue)](https://github.com/softwell/genro-libs)
 [![LLM Docs](https://img.shields.io/badge/LLM-Docs-purple)](llm-docs/)
 
 SmartAsync allows you to write async methods once and call them in both sync and async contexts without modification. It automatically detects the execution context and adapts accordingly.
