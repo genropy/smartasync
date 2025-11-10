@@ -129,13 +129,12 @@ For typical CLI tools and web APIs, this overhead is negligible compared to netw
 SmartAsync works seamlessly with `__slots__` classes:
 
 ```python
-from smartasync import SmartAsync, smartasync
+from smartasync import smartasync
 
-class OptimizedManager(SmartAsync):
-    __slots__ = ('data',)  # No __weakref__ needed!
+class OptimizedManager:
+    __slots__ = ('data',)
 
     def __init__(self):
-        SmartAsync.__init__(self, _sync=False)
         self.data = []
 
     @smartasync
@@ -159,6 +158,24 @@ my_method._smartasync_reset_cache()
 
 - ⚠️ **Cannot transition from async to sync**: Once in async context, cannot move back to sync (this is correct behavior)
 - ⚠️ **Sync overhead**: Always rechecks context in sync mode (~2 microseconds per call)
+
+## Thread Safety
+
+SmartAsync is **safe for all common use cases**:
+
+✅ **Safe scenarios** (covers 99% of real-world usage):
+- Single-threaded applications (CLI tools, scripts)
+- Async event loops (inherently single-threaded)
+- Web servers with request isolation (new instance per request)
+- Thread pools with instance-per-thread pattern
+
+⚠️ **Theoretical concern** (anti-pattern, not recommended):
+- Sharing a single instance across multiple threads in a thread pool
+
+**Why this isn't a real issue:**
+The anti-pattern scenario defeats SmartAsync's purpose. If you're using thread pools with shared instances, you should use async workers instead for better performance and natural concurrency.
+
+**Recommendation:** Create instances per thread/request, or better yet, use async patterns natively.
 
 ## Related Projects
 

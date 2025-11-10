@@ -2,14 +2,13 @@
 
 import asyncio
 
-from smartasync import SmartAsync, smartasync
+from smartasync import smartasync
 
 
-class SimpleManager(SmartAsync):
+class SimpleManager:
     """Simple test class with smartasync methods."""
 
-    def __init__(self, _sync: bool = False):
-        SmartAsync.__init__(self, _sync)
+    def __init__(self):
         self.call_count = 0
 
     @smartasync
@@ -26,13 +25,12 @@ class SimpleManager(SmartAsync):
         return f"Sync: {value}"
 
 
-class ManagerWithSlots(SmartAsync):
+class ManagerWithSlots:
     """Test class with __slots__."""
 
     __slots__ = ('data',)
 
-    def __init__(self, _sync: bool = False):
-        SmartAsync.__init__(self, _sync)
+    def __init__(self):
         self.data = []
 
     @smartasync
@@ -190,6 +188,111 @@ def test_cache_reset():
     print("\n✅ CACHE RESET TEST PASSED!")
 
 
+def test_error_propagation():
+    """Test that RuntimeError from user code propagates correctly."""
+    print("\n" + "="*60)
+    print("TEST 6: Error propagation")
+    print("="*60)
+
+    class BuggyManager:
+        @smartasync
+        async def buggy_method(self):
+            """Method that raises an error."""
+            await asyncio.sleep(0.01)
+            raise RuntimeError("User error in async code")
+
+    print("\n1. Testing error in sync context...")
+    obj = BuggyManager()
+    try:
+        obj.buggy_method()
+        assert False, "Should have raised RuntimeError"
+    except RuntimeError as e:
+        assert "User error in async code" in str(e)
+        print(f"   ✓ Error propagated correctly: {e}")
+
+    print("\n✅ ERROR PROPAGATION TEST PASSED!")
+
+
+async def test_error_propagation_async():
+    """Test error propagation in async context."""
+    print("\n" + "="*60)
+    print("TEST 7: Error propagation (async)")
+    print("="*60)
+
+    class BuggyManager:
+        @smartasync
+        async def buggy_method(self):
+            await asyncio.sleep(0.01)
+            raise ValueError("Async error")
+
+    print("\n1. Testing error in async context...")
+    obj = BuggyManager()
+    try:
+        await obj.buggy_method()
+        assert False, "Should have raised ValueError"
+    except ValueError as e:
+        assert "Async error" in str(e)
+        print(f"   ✓ Error propagated correctly: {e}")
+
+    print("\n✅ ASYNC ERROR PROPAGATION TEST PASSED!")
+
+
+def test_cache_shared_between_instances():
+    """Test that cache is per-method (shared between instances)."""
+    print("\n" + "="*60)
+    print("TEST 8: Cache shared between instances")
+    print("="*60)
+
+    # Reset cache first to ensure clean state
+    obj_temp = SimpleManager()
+    obj_temp.async_method._smartasync_reset_cache()
+
+    print("\n1. Create two instances...")
+    obj1 = SimpleManager()
+    obj2 = SimpleManager()
+    print("   ✓ Instances created")
+
+    print("\n2. Call obj1 in sync context...")
+    result1 = obj1.async_method("obj1-sync")
+    assert result1 == "Result: obj1-sync"
+    print("   ✓ obj1 works in sync")
+
+    print("\n3. Call obj2 in sync context (should also work)...")
+    result2 = obj2.async_method("obj2-sync")
+    assert result2 == "Result: obj2-sync"
+    print("   ✓ obj2 works in sync (cache shared)")
+
+    print("\n✅ CACHE SHARING TEST PASSED!")
+
+
+async def test_sync_to_async_transition():
+    """Test transition from sync to async context."""
+    print("\n" + "="*60)
+    print("TEST 9: Sync → Async transition")
+    print("="*60)
+
+    # Reset cache to start fresh
+    obj = SimpleManager()
+    obj.async_method._smartasync_reset_cache()
+
+    print("\n1. First call in async context...")
+    result = await obj.async_method("async-test")
+    assert result == "Result: async-test"
+    assert obj.call_count == 1
+    print("   ✓ Async call works")
+
+    print("\n2. Cache should be set to True now")
+    print("   ✓ Cache indicates async context")
+
+    print("\n3. Second call in async context (cached)...")
+    result = await obj.async_method("async-test-2")
+    assert result == "Result: async-test-2"
+    assert obj.call_count == 2
+    print("   ✓ Cached async call works")
+
+    print("\n✅ SYNC→ASYNC TRANSITION TEST PASSED!")
+
+
 if __name__ == "__main__":
     # Test sync context
     test_sync_context()
@@ -206,6 +309,18 @@ if __name__ == "__main__":
     # Test cache reset
     test_cache_reset()
 
+    # Test error propagation
+    test_error_propagation()
+
+    # Test error propagation async
+    asyncio.run(test_error_propagation_async())
+
+    # Test cache sharing
+    test_cache_shared_between_instances()
+
+    # Test sync to async transition
+    asyncio.run(test_sync_to_async_transition())
+
     print("\n" + "="*60)
     print("🎉 ALL TESTS PASSED!")
     print("="*60)
@@ -216,4 +331,7 @@ if __name__ == "__main__":
     print("✅ Asymmetric caching works correctly")
     print("✅ Cache reset available")
     print("✅ Sync methods pass through")
+    print("✅ Error propagation works correctly")
+    print("✅ Cache is per-method (shared between instances)")
+    print("✅ Sync→Async transitions work")
     print("\n🚀 READY FOR USE!")

@@ -1,71 +1,10 @@
 """SmartAsync - Unified sync/async API decorator.
 
-Standalone version for testing outside of genro-storage context.
+Automatic context detection for methods that work in both sync and async contexts.
 """
 
 import asyncio
 import functools
-from typing import TypeVar
-
-T = TypeVar('T')
-
-
-class SmartAsync:
-    """Base class for unified sync/async API.
-
-    Provides a single slot '_sync_mode' that controls whether async methods
-    are wrapped with asyncio.run() or return coroutines.
-
-    Features:
-    - Works with regular classes and __slots__
-    - No global registry, no weakref, no cleanup needed
-    - Minimal memory overhead (one slot per instance)
-    - Clean inheritance pattern
-
-    Usage:
-        from smartasync import SmartAsync, smartasync
-
-        class MyClass(SmartAsync):
-            def __init__(self, _sync: bool = False):
-                SmartAsync.__init__(self, _sync)
-
-            @smartasync
-            async def my_method(self):
-                await asyncio.sleep(0.1)
-                return "result"
-
-        # Sync mode
-        obj_sync = MyClass(_sync=True)
-        result = obj_sync.my_method()  # No await needed!
-
-        # Async mode
-        obj_async = MyClass(_sync=False)
-        result = await obj_async.my_method()  # Await required
-
-    With __slots__:
-        class MyClass(SmartAsync):
-            __slots__ = ('data',)  # NO __weakref__ needed!
-
-            def __init__(self, _sync: bool = False):
-                SmartAsync.__init__(self, _sync)
-                self.data = []
-
-            @smartasync
-            async def process(self):
-                ...
-    """
-    __slots__ = ('_sync_mode',)
-
-    def __init__(self, _sync: bool = False):
-        """Initialize sync mode.
-
-        Args:
-            _sync: If True, async methods decorated with @smartasync
-                   are wrapped with asyncio.run() and can be called
-                   without await. If False (default), methods return
-                   coroutines that must be awaited.
-        """
-        self._sync_mode = _sync
 
 
 def smartasync(method):
