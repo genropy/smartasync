@@ -89,5 +89,5 @@ Write **simple synchronous tests** that work seamlessly with async code:
 ---
 
 **Next Steps**:
-- See [01: CLI Tools](01-cli-tools-async-libs.md) for similar patterns
+- See [01: Sync App → Async Libraries](01-sync-app-async-libs.md) for similar patterns
 - Check [04: Unified Library API](04-unified-library-api.md) for library testing

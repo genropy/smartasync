@@ -244,7 +244,7 @@ Return result to user
 
 ### Caching Strategy
 
-```python
+```text
 _cached_has_loop = False  # Per-method closure variable
 
 # First call in sync context

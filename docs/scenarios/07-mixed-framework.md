@@ -234,5 +234,5 @@ Integration is successful when:
 ---
 
 **Next Steps**:
-- See [02: Async App → Sync Legacy](02-async-app-sync-legacy.md) for reverse pattern
+- See [02: Async App → Sync Libraries](02-async-app-sync-libs.md) for reverse pattern
 - Check [05: Gradual Migration](05-gradual-migration.md) for migration strategy

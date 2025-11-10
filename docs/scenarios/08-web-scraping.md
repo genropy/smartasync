@@ -275,5 +275,5 @@ Your scraper is successful when:
 ---
 
 **Next Steps**:
-- See [01: CLI Tools](01-cli-tools-async-libs.md) for CLI scraper tools
+- See [01: Sync App → Async Libraries](01-sync-app-async-libs.md) for CLI scraper tools
 - Check [09: Interactive Environments](09-interactive-environments.md) for prototyping

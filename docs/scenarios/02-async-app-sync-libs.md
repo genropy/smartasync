@@ -452,7 +452,7 @@ For high-load scenarios:
 
 - **Example Code**: [examples/scenario_a2_async_calls_sync.py](../../examples/scenario_a2_async_calls_sync.py)
 - **Test**: [tests/test_smartasync.py::test_bidirectional_scenario_a2](../../tests/test_smartasync.py)
-- **Alternative Solutions**: [docs/comparison-with-alternatives.md](../comparison-with-alternatives.md)
+- **Alternative Solutions**: [Comparison with Alternatives](../advanced/comparison.md)
 
 ---
 
@@ -473,6 +473,6 @@ For high-load scenarios:
 ---
 
 **Next Steps**:
-- Explore [A1: CLI Tools](a1-cli-tools-async-libs.md) for sync usage
-- See [B1: Unified Library API](b1-unified-library-api.md) for library design
-- Check [C1: Testing](c1-testing-async-code.md) for testing strategies
+- Explore [01: Sync App → Async Libraries](01-sync-app-async-libs.md) for sync usage
+- See [04: Unified Library API](04-unified-library-api.md) for library design
+- Check [03: Testing Async Code](03-testing-async-code.md) for testing strategies

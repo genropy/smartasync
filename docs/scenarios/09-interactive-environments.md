@@ -291,5 +291,5 @@ Your notebook approach is successful when:
 ---
 
 **Next Steps**:
-- See [01: CLI Tools](01-cli-tools-async-libs.md) for similar simple interface
-- Check [03: Testing](03-testing-async-code.md) for testing async code simply
+- See [01: Sync App → Async Libraries](01-sync-app-async-libs.md) for similar simple interface
+- Check [03: Testing Async Code](03-testing-async-code.md) for testing async code simply
