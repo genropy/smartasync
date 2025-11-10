@@ -1,104 +1,104 @@
 # SmartAsync Scenarios
 
-Questa directory contiene guide dettagliate per scenari d'uso specifici di SmartAsync, numerate in ordine logico di apprendimento.
+This directory contains detailed guides for specific SmartAsync use cases, numbered in logical learning order.
 
-## 📚 Scenari Disponibili
+## 📚 Available Scenarios
 
-### Fondamentali (1-3)
-Scenari base per iniziare con SmartAsync
+### Fundamentals (1-3)
+Basic scenarios to get started with SmartAsync
 
-1. **[01: CLI Tools with Async Libraries](01-cli-tools-async-libs.md)**
-   - 🎯 **Problema**: CLI tool che deve usare librerie async moderne
-   - 💡 **Soluzione**: Chiamare async senza `asyncio.run()` boilerplate
-   - 📝 **Esempio**: GitHub CLI con httpx
+1. **[01: Sync App → Async Libraries](01-sync-app-async-libs.md)**
+   - 🎯 **Problem**: CLI tool needs to use modern async libraries
+   - 💡 **Solution**: Call async without `asyncio.run()` boilerplate
+   - 📝 **Example**: GitHub CLI with httpx
    - 👥 **Target**: CLI developers, script writers
 
-2. **[02: Async App → Sync Legacy Library](02-async-app-sync-legacy.md)**
-   - 🎯 **Problema**: FastAPI/Django che usa database sync legacy
-   - 💡 **Soluzione**: Auto-threading di codice sync in contesto async
-   - 📝 **Esempio**: FastAPI + SQLite sync
+2. **[02: Async App → Sync Legacy Library](02-async-app-sync-libs.md)**
+   - 🎯 **Problem**: FastAPI/Django using legacy sync database
+   - 💡 **Solution**: Auto-threading of sync code in async context
+   - 📝 **Example**: FastAPI + SQLite sync
    - 👥 **Target**: Web developers, backend engineers
 
 3. **[03: Testing Async Code](03-testing-async-code.md)**
-   - 🎯 **Problema**: Test async verbosi, richiedono pytest-asyncio
-   - 💡 **Soluzione**: Test sync semplici che funzionano con codice async
-   - 📝 **Esempio**: Test suite senza plugin
+   - 🎯 **Problem**: Verbose async tests, require pytest-asyncio
+   - 💡 **Solution**: Simple sync tests that work with async code
+   - 📝 **Example**: Test suite without plugins
    - 👥 **Target**: QA engineers, developers
 
-### Architettura (4-6)
-Design patterns e architetture avanzate
+### Architecture (4-6)
+Design patterns and advanced architectures
 
 4. **[04: Unified Library API](04-unified-library-api.md)**
-   - 🎯 **Problema**: Mantenere due implementazioni (sync e async)
-   - 💡 **Soluzione**: Single implementation per entrambi gli utenti
-   - 📝 **Esempio**: HTTP client universale
+   - 🎯 **Problem**: Maintaining two implementations (sync and async)
+   - 💡 **Solution**: Single implementation for both user types
+   - 📝 **Example**: Universal HTTP client
    - 👥 **Target**: Library authors
 
 5. **[05: Gradual Migration](05-gradual-migration.md)**
-   - 🎯 **Problema**: Migrare legacy codebase sync a async
-   - 💡 **Soluzione**: Migrazione incrementale senza breaking changes
-   - 📝 **Esempio**: Refactoring progressivo a fasi
-   - 👥 **Target**: Maintainer di progetti legacy
+   - 🎯 **Problem**: Migrating legacy sync codebase to async
+   - 💡 **Solution**: Incremental migration without breaking changes
+   - 📝 **Example**: Progressive phased refactoring
+   - 👥 **Target**: Legacy project maintainers
 
 6. **[06: Plugin Systems](06-plugin-systems.md)**
-   - 🎯 **Problema**: Plugin system che supporta plugin sync e async
-   - 💡 **Soluzione**: Pipeline che accetta entrambi i tipi
-   - 📝 **Esempio**: Data processing pipeline
+   - 🎯 **Problem**: Plugin system supporting both sync and async plugins
+   - 💡 **Solution**: Pipeline accepting both types
+   - 📝 **Example**: Data processing pipeline
    - 👥 **Target**: Framework developers
 
-### Integrazione (7-9)
-Scenari di integrazione framework e tool
+### Integration (7-9)
+Framework and tool integration scenarios
 
 7. **[07: Mixed Framework Integration](07-mixed-framework.md)**
-   - 🎯 **Problema**: Integrare Flask (sync) con microservices async
-   - 💡 **Soluzione**: Chiamare async da sync framework seamlessly
-   - 📝 **Esempio**: Flask + async API clients
+   - 🎯 **Problem**: Integrating Flask (sync) with async microservices
+   - 💡 **Solution**: Call async from sync framework seamlessly
+   - 📝 **Example**: Flask + async API clients
    - 👥 **Target**: System architects
 
 8. **[08: Web Scraping](08-web-scraping.md)**
-   - 🎯 **Problema**: Mix async I/O fetch + sync BeautifulSoup parsing
-   - 💡 **Soluzione**: Parsing sync non blocca event loop
-   - 📝 **Esempio**: Concurrent scraping con parsing offloaded
+   - 🎯 **Problem**: Mix async I/O fetch + sync BeautifulSoup parsing
+   - 💡 **Solution**: Sync parsing doesn't block event loop
+   - 📝 **Example**: Concurrent scraping with offloaded parsing
    - 👥 **Target**: Scraper developers
 
 9. **[09: Interactive Environments](09-interactive-environments.md)**
-   - 🎯 **Problema**: Jupyter notebooks e async/await verboso
-   - 💡 **Soluzione**: Chiamare async senza await in REPL
-   - 📝 **Esempio**: Data analysis in notebook
+   - 🎯 **Problem**: Jupyter notebooks and verbose async/await
+   - 💡 **Solution**: Call async without await in REPL
+   - 📝 **Example**: Data analysis in notebook
    - 👥 **Target**: Data scientists, researchers
 
-## Come Usare Questi Documenti
+## How to Use These Documents
 
-Ogni documento include:
-- 📋 **Problema**: Descrizione del caso d'uso
-- 🔴 **Senza SmartAsync**: Approccio tradizionale (problemi)
-- 🟢 **Con SmartAsync**: Soluzione migliorata
-- 💡 **Esempio Completo**: Codice pronto all'uso
-- ⚠️ **Considerazioni**: Limiti e best practices
-- 🔗 **Risorse**: Link a esempi e riferimenti
+Each document includes:
+- 📋 **Problem**: Use case description
+- 🔴 **Without SmartAsync**: Traditional approach (problems)
+- 🟢 **With SmartAsync**: Improved solution
+- 💡 **Complete Example**: Ready-to-use code
+- ⚠️ **Considerations**: Limitations and best practices
+- 🔗 **Resources**: Links to examples and references
 
 ## Quick Reference
 
-| Hai bisogno di... | Vai a |
-|-------------------|-------|
-| CLI tool con httpx/aiohttp | [A1](a1-cli-tools-async-libs.md) |
-| FastAPI + DB sync | [A2](a2-async-calls-sync-legacy.md) |
-| Migrare codice legacy | [A3](a3-gradual-migration.md) |
-| Library per entrambi gli utenti | [B1](b1-unified-library-api.md) |
-| Sistema di plugin flessibile | [B2](b2-plugin-systems.md) |
-| Test più semplici | [C1](c1-testing-async-code.md) |
-| Notebook Jupyter | [C2](c2-interactive-environments.md) |
-| Integrare Flask e async | [D1](d1-mixed-framework-integration.md) |
-| Web scraper efficiente | [D2](web-scraping.md) |
+| You need to... | Go to |
+|----------------|-------|
+| CLI tool with httpx/aiohttp | [01](01-sync-app-async-libs.md) |
+| FastAPI + sync DB | [02](02-async-app-sync-libs.md) |
+| Migrate legacy code | [05](05-gradual-migration.md) |
+| Library for both users | [04](04-unified-library-api.md) |
+| Flexible plugin system | [06](06-plugin-systems.md) |
+| Simpler tests | [03](03-testing-async-code.md) |
+| Jupyter notebook | [09](09-interactive-environments.md) |
+| Integrate Flask and async | [07](07-mixed-framework.md) |
+| Efficient web scraper | [08](08-web-scraping.md) |
 
-## Prossimi Scenari
+## Upcoming Scenarios
 
-Scenari in programma:
-- E1: Configuration Management
-- E2: Message Queue Integration
-- E3: Microservices Communication
-- E4: File Processing Pipelines
+Planned scenarios:
+- Configuration Management
+- Message Queue Integration
+- Microservices Communication
+- File Processing Pipelines
 
 ---
 
-**Feedback?** Apri un issue su GitHub con tag `documentation`.
+**Feedback?** Open an issue on GitHub with tag `documentation`.
