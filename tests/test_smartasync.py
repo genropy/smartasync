@@ -1,46 +1,47 @@
-"""Test @smartsync decorator in standalone context."""
+"""Test @smartasync decorator in standalone context."""
 
 import asyncio
-from smartsync import SmartSync, smartsync
+
+from smartasync import SmartAsync, smartasync
 
 
-class SimpleManager(SmartSync):
-    """Simple test class with smartsync methods."""
+class SimpleManager(SmartAsync):
+    """Simple test class with smartasync methods."""
 
     def __init__(self, _sync: bool = False):
-        SmartSync.__init__(self, _sync)
+        SmartAsync.__init__(self, _sync)
         self.call_count = 0
 
-    @smartsync
+    @smartasync
     async def async_method(self, value: str) -> str:
-        """Async method decorated with @smartsync."""
+        """Async method decorated with @smartasync."""
         await asyncio.sleep(0.01)
         self.call_count += 1
         return f"Result: {value}"
 
-    @smartsync
+    @smartasync
     def sync_method(self, value: str) -> str:
-        """Sync method decorated with @smartsync (pass-through)."""
+        """Sync method decorated with @smartasync (pass-through)."""
         self.call_count += 1
         return f"Sync: {value}"
 
 
-class ManagerWithSlots(SmartSync):
+class ManagerWithSlots(SmartAsync):
     """Test class with __slots__."""
 
     __slots__ = ('data',)
 
     def __init__(self, _sync: bool = False):
-        SmartSync.__init__(self, _sync)
+        SmartAsync.__init__(self, _sync)
         self.data = []
 
-    @smartsync
+    @smartasync
     async def add_item(self, item: str) -> None:
         """Add item to data."""
         await asyncio.sleep(0.01)
         self.data.append(item)
 
-    @smartsync
+    @smartasync
     async def get_count(self) -> int:
         """Get data count."""
         await asyncio.sleep(0.01)
@@ -170,7 +171,7 @@ def test_cache_reset():
 
     # Create fresh object and reset cache to ensure clean state
     obj = SimpleManager()
-    obj.async_method._smartsync_reset_cache()
+    obj.async_method._smartasync_reset_cache()
 
     print("\n1. First call...")
     result = obj.async_method("test1")
@@ -178,7 +179,7 @@ def test_cache_reset():
     print("   ✓ Works!")
 
     print("\n2. Reset cache...")
-    obj.async_method._smartsync_reset_cache()
+    obj.async_method._smartasync_reset_cache()
     print("   ✓ Cache reset!")
 
     print("\n3. Call again after reset...")

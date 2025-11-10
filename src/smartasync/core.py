@@ -1,16 +1,16 @@
-"""SmartSync - Unified sync/async API decorator.
+"""SmartAsync - Unified sync/async API decorator.
 
 Standalone version for testing outside of genro-storage context.
 """
 
 import asyncio
 import functools
-from typing import Callable, TypeVar, Any
+from typing import TypeVar
 
 T = TypeVar('T')
 
 
-class SmartSync:
+class SmartAsync:
     """Base class for unified sync/async API.
 
     Provides a single slot '_sync_mode' that controls whether async methods
@@ -23,13 +23,13 @@ class SmartSync:
     - Clean inheritance pattern
 
     Usage:
-        from smartsync import SmartSync, smartsync
+        from smartasync import SmartAsync, smartasync
 
-        class MyClass(SmartSync):
+        class MyClass(SmartAsync):
             def __init__(self, _sync: bool = False):
-                SmartSync.__init__(self, _sync)
+                SmartAsync.__init__(self, _sync)
 
-            @smartsync
+            @smartasync
             async def my_method(self):
                 await asyncio.sleep(0.1)
                 return "result"
@@ -43,14 +43,14 @@ class SmartSync:
         result = await obj_async.my_method()  # Await required
 
     With __slots__:
-        class MyClass(SmartSync):
+        class MyClass(SmartAsync):
             __slots__ = ('data',)  # NO __weakref__ needed!
 
             def __init__(self, _sync: bool = False):
-                SmartSync.__init__(self, _sync)
+                SmartAsync.__init__(self, _sync)
                 self.data = []
 
-            @smartsync
+            @smartasync
             async def process(self):
                 ...
     """
@@ -60,7 +60,7 @@ class SmartSync:
         """Initialize sync mode.
 
         Args:
-            _sync: If True, async methods decorated with @smartsync
+            _sync: If True, async methods decorated with @smartasync
                    are wrapped with asyncio.run() and can be called
                    without await. If False (default), methods return
                    coroutines that must be awaited.
@@ -68,7 +68,7 @@ class SmartSync:
         self._sync_mode = _sync
 
 
-def smartsync(method):
+def smartasync(method):
     """Decorator for methods that work in both sync and async contexts.
 
     Automatically detects whether the code is running in an async or sync
@@ -96,7 +96,7 @@ def smartsync(method):
 
     Example:
         class Manager:
-            @smartsync
+            @smartasync
             async def configure(self, config: dict) -> None:
                 # Implementation uses await
                 await self._setup(config)
@@ -149,7 +149,7 @@ def smartsync(method):
             nonlocal _cached_has_loop
             _cached_has_loop = False
 
-        wrapper._smartsync_reset_cache = reset_cache
+        wrapper._smartasync_reset_cache = reset_cache
 
         return wrapper
     else:

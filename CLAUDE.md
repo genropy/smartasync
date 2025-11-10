@@ -1,8 +1,8 @@
-# Claude Code Instructions - SmartSync
+# Claude Code Instructions - SmartAsync
 
 ## Project Context
 
-**SmartSync** is a unified sync/async API decorator that automatically detects execution context and adapts method behavior accordingly.
+**SmartAsync** is a unified sync/async API decorator that automatically detects execution context and adapts method behavior accordingly.
 
 ### Current Status
 - **Development Status**: Alpha (`Development Status :: 3 - Alpha`)
@@ -12,29 +12,29 @@
 
 ### Project Overview
 
-SmartSync provides:
-- `@smartsync` decorator for automatic sync/async context detection
-- `SmartSync` base class for instance-level sync mode control
+SmartAsync provides:
+- `@smartasync` decorator for automatic sync/async context detection
+- `SmartAsync` base class for instance-level sync mode control
 - Asymmetric caching for optimal performance
 - Compatible with `__slots__` for memory efficiency
 
 ## Repository Information
 
 - **Owner**: genropy
-- **Repository**: https://github.com/genropy/smartsync
-- **Documentation**: https://smartsync.readthedocs.io (planned)
+- **Repository**: https://github.com/genropy/smartasync
+- **Documentation**: https://smartasync.readthedocs.io (planned)
 - **License**: MIT
 - **Part of**: Genro-Libs toolkit
 
 ## Project Structure
 
 ```
-smartsync/
-├── src/smartsync/
+smartasync/
+├── src/smartasync/
 │   ├── __init__.py          # Package exports
-│   └── core.py              # SmartSync and smartsync implementation
+│   └── core.py              # SmartAsync and smartasync implementation
 ├── tests/
-│   └── test_smartsync.py    # Complete test suite
+│   └── test_smartasync.py    # Complete test suite
 ├── docs/                    # Documentation (to be added)
 ├── pyproject.toml          # Package configuration
 ├── README.md               # Project overview
@@ -65,7 +65,7 @@ smartsync/
 
 ### Testing
 
-Complete test suite in `tests/test_smartsync.py`:
+Complete test suite in `tests/test_smartasync.py`:
 - Sync context tests (no event loop)
 - Async context tests (with event loop)
 - `__slots__` compatibility tests
@@ -78,7 +78,7 @@ Complete test suite in `tests/test_smartsync.py`:
    - **Why**: Correct behavior (can't transition async → sync)
    - **Trade-off**: ~2 microseconds overhead per sync call
 
-2. **SmartSync base class with `__slots__`**: Provides instance-level control
+2. **SmartAsync base class with `__slots__`**: Provides instance-level control
    - **Why**: Allows `_sync_mode` storage without breaking `__slots__` in subclasses
 
 3. **`asyncio.run()` for sync context**: Simple and reliable
@@ -87,7 +87,7 @@ Complete test suite in `tests/test_smartsync.py`:
 
 ## Relationship with Other Projects
 
-SmartSync is used by:
+SmartAsync is used by:
 - **smpub**: For automatic async handler support in ApiSwitcher
 - Potentially others in Genro-Libs ecosystem
 
@@ -142,8 +142,8 @@ SmartSync is used by:
 
 | File | Purpose |
 |------|---------|
-| core.py | SmartSync class and smartsync decorator |
-| test_smartsync.py | Complete test suite |
+| core.py | SmartAsync class and smartasync decorator |
+| test_smartasync.py | Complete test suite |
 | __init__.py | Package exports |
 
 ---

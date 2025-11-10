@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "smartsync"
+name = "smartasync"
 version = "0.1.0"
 description = "Unified sync/async API decorator with automatic context detection"
 authors = [
@@ -52,21 +52,21 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/genropy/smartsync"
-Documentation = "https://smartsync.readthedocs.io"
-Repository = "https://github.com/genropy/smartsync"
-"Bug Tracker" = "https://github.com/genropy/smartsync/issues"
+Homepage = "https://github.com/genropy/smartasync"
+Documentation = "https://smartasync.readthedocs.io"
+Repository = "https://github.com/genropy/smartasync"
+"Bug Tracker" = "https://github.com/genropy/smartasync/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["smartsync*"]
+include = ["smartasync*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --cov=smartsync --cov-report=term-missing --cov-report=html --cov-report=xml"
+addopts = "-v --cov=smartasync --cov-report=term-missing --cov-report=html --cov-report=xml"
 asyncio_mode = "auto"
 
 [tool.black]
@@ -86,4 +86,4 @@ python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false
-files = ["src/smartsync"]
+files = ["src/smartasync"]
