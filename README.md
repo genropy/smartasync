@@ -1,8 +1,14 @@
+<div align="center">
+
+<img src="docs/assets/logo.png" alt="SmartAsync Logo" width="200"/>
+
 # SmartAsync
 
 > **Sync or async: this WAS the question**
 
 **Unified sync/async API decorator with automatic context detection**
+
+</div>
 
 [![PyPI version](https://img.shields.io/pypi/v/smartasync.svg)](https://pypi.org/project/smartasync/)
 [![Tests](https://github.com/genropy/smartasync/actions/workflows/test.yml/badge.svg)](https://github.com/genropy/smartasync/actions/workflows/test.yml)
