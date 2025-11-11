@@ -1,5 +1,7 @@
 # SmartAsync
 
+> **Sync or async: this WAS the question**
+
 **Unified sync/async API decorator with automatic context detection**
 
 [![PyPI version](https://img.shields.io/pypi/v/smartasync.svg)](https://pypi.org/project/smartasync/)

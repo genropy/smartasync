@@ -1,6 +1,8 @@
 SmartAsync Documentation
 ========================
 
+   *Sync or async: this WAS the question*
+
 **Bidirectional sync/async bridge for Python**
 
 SmartAsync provides automatic context detection to seamlessly bridge synchronous and asynchronous Python code. Write your code once, use it everywhere.
