@@ -67,6 +67,19 @@ class SmartasyncPlugin:
         - Thread-safe and works with all SmartSwitch features
     """
 
+    def on_decorate(self, func: Callable, switcher: "Switcher") -> None:
+        """Hook called when a function is decorated (before wrapping).
+
+        This is a notification hook. It doesn't modify the function,
+        just receives notification that decoration is happening.
+
+        Args:
+            func: The function being decorated
+            switcher: The Switcher instance
+        """
+        # No-op: we don't need to do anything on decoration
+        pass
+
     def wrap(self, func: Callable, switcher: "Switcher") -> Callable:
         """Wrap function with smartasync if not already wrapped.
 
