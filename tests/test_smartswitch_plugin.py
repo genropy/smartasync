@@ -24,6 +24,7 @@ class TestBasicPlugin:
                 async def _handler(self):
                     await asyncio.sleep(0.01)
                     return "result"
+
                 return _handler
 
         handler = Handler()
@@ -45,6 +46,7 @@ class TestBasicPlugin:
                 @self.api
                 def _handler(self):
                     return "sync_result"
+
                 return _handler
 
         handler = Handler()
@@ -68,6 +70,7 @@ class TestBasicPlugin:
                 async def _handler(self):
                     await asyncio.sleep(0.01)
                     return "result"
+
                 return _handler
 
         handler = Handler()
@@ -86,7 +89,7 @@ class TestStorageManagerPattern:
 
         class StorageManager:
             def __init__(self):
-                self.api = Switcher(prefix='storage_').plug(SmartasyncPlugin())
+                self.api = Switcher(prefix="storage_").plug(SmartasyncPlugin())
                 self.data = []
 
             @property
@@ -97,6 +100,7 @@ class TestStorageManagerPattern:
                     await asyncio.sleep(0.01)
                     self.data.append(path)
                     return f"node:{path}"
+
                 return _node
 
         manager = StorageManager()
@@ -113,7 +117,7 @@ class TestStorageManagerPattern:
 
         class StorageManager:
             def __init__(self):
-                self.api = Switcher(prefix='storage_').plug(SmartasyncPlugin())
+                self.api = Switcher(prefix="storage_").plug(SmartasyncPlugin())
                 self.data = []
 
             @property
@@ -124,6 +128,7 @@ class TestStorageManagerPattern:
                     await asyncio.sleep(0.01)
                     self.data.append(path)
                     return f"node:{path}"
+
                 return _node
 
         manager = StorageManager()
@@ -151,6 +156,7 @@ class TestMultipleMethods:
                 async def _handler_one(self):
                     await asyncio.sleep(0.01)
                     return "one"
+
                 return _handler_one
 
             @property
@@ -159,6 +165,7 @@ class TestMultipleMethods:
                 async def _handler_two(self):
                     await asyncio.sleep(0.01)
                     return "two"
+
                 return _handler_two
 
             @property
@@ -166,6 +173,7 @@ class TestMultipleMethods:
                 @self.api
                 def _handler_three(self):
                     return "three"
+
                 return _handler_three
 
         handler = MultiHandler()
@@ -192,6 +200,7 @@ class TestMethodWithArguments:
                 async def _add(self, a: int, b: int) -> int:
                     await asyncio.sleep(0.01)
                     return a + b
+
                 return _add
 
         calc = Calculator()
@@ -214,6 +223,7 @@ class TestMethodWithArguments:
                 async def _format_text(self, text: str, upper: bool = False) -> str:
                     await asyncio.sleep(0.01)
                     return text.upper() if upper else text.lower()
+
                 return _format_text
 
         formatter = Formatter()
@@ -240,6 +250,7 @@ class TestPluginProtocol:
                 async def _documented(self):
                     """This is a documented method."""
                     return "result"
+
                 return _documented
 
         handler = DocHandler()

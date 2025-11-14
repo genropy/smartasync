@@ -6,7 +6,7 @@ allowing SmartSwitch handlers to work seamlessly in both sync and async contexts
 
 from typing import TYPE_CHECKING, Callable
 
-from smartswitch import BasePlugin
+from smartswitch import BasePlugin  # type: ignore[import-untyped]
 
 if TYPE_CHECKING:
     from smartswitch import MethodEntry, Switcher
@@ -114,4 +114,5 @@ class SmartasyncPlugin(BasePlugin):
 
         # Wrap with smartasync once
         from .core import smartasync
-        return smartasync(call_next)
+
+        return smartasync(call_next)  # type: ignore[no-any-return]

@@ -28,7 +28,7 @@ class SimpleManager:
 class ManagerWithSlots:
     """Test class with __slots__."""
 
-    __slots__ = ('data',)
+    __slots__ = ("data",)
 
     def __init__(self):
         self.data = []
@@ -48,9 +48,9 @@ class ManagerWithSlots:
 
 def test_sync_context():
     """Test sync context (no event loop)."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Sync context (no event loop)")
-    print("="*60)
+    print("=" * 60)
 
     obj = SimpleManager()
 
@@ -83,9 +83,9 @@ def test_sync_context():
 
 async def test_async_context():
     """Test async context (with event loop)."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Async context (with event loop)")
-    print("="*60)
+    print("=" * 60)
 
     obj = SimpleManager()
 
@@ -118,9 +118,9 @@ async def test_async_context():
 
 def test_slots():
     """Test with __slots__."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Class with __slots__")
-    print("="*60)
+    print("=" * 60)
 
     obj = ManagerWithSlots()
 
@@ -141,9 +141,9 @@ def test_slots():
 
 async def test_slots_async():
     """Test with __slots__ in async context."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 4: Class with __slots__ (async)")
-    print("="*60)
+    print("=" * 60)
 
     obj = ManagerWithSlots()
 
@@ -163,9 +163,9 @@ async def test_slots_async():
 
 def test_cache_reset():
     """Test cache reset functionality."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 5: Cache reset")
-    print("="*60)
+    print("=" * 60)
 
     # Create fresh object and reset cache to ensure clean state
     obj = SimpleManager()
@@ -190,9 +190,9 @@ def test_cache_reset():
 
 def test_error_propagation():
     """Test that RuntimeError from user code propagates correctly."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 6: Error propagation")
-    print("="*60)
+    print("=" * 60)
 
     class BuggyManager:
         @smartasync
@@ -215,9 +215,9 @@ def test_error_propagation():
 
 async def test_error_propagation_async():
     """Test error propagation in async context."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 7: Error propagation (async)")
-    print("="*60)
+    print("=" * 60)
 
     class BuggyManager:
         @smartasync
@@ -239,9 +239,9 @@ async def test_error_propagation_async():
 
 def test_cache_shared_between_instances():
     """Test that cache is per-method (shared between instances)."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 8: Cache shared between instances")
-    print("="*60)
+    print("=" * 60)
 
     # Reset cache first to ensure clean state
     obj_temp = SimpleManager()
@@ -267,9 +267,9 @@ def test_cache_shared_between_instances():
 
 async def test_sync_to_async_transition():
     """Test transition from sync to async context."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 9: Sync → Async transition")
-    print("="*60)
+    print("=" * 60)
 
     # Reset cache to start fresh
     obj = SimpleManager()
@@ -299,9 +299,9 @@ async def test_bidirectional_scenario_a2():
     This demonstrates the bidirectional capability where sync methods
     are automatically offloaded to threads when called from async context.
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 10: Bidirectional - Async App → Sync Library")
-    print("="*60)
+    print("=" * 60)
 
     class LegacyLibrary:
         """Simulates a sync legacy library."""
@@ -313,6 +313,7 @@ async def test_bidirectional_scenario_a2():
         def blocking_operation(self, data: str) -> str:
             """Sync blocking operation (e.g., CPU-bound processing)."""
             import time
+
             time.sleep(0.01)  # Simulate blocking work
             result = data.upper()
             self.processed.append(result)
@@ -330,6 +331,7 @@ async def test_bidirectional_scenario_a2():
 
     print("\n3. Multiple concurrent calls (won't block event loop)...")
     import asyncio
+
     results = await asyncio.gather(
         lib.blocking_operation("item1"),
         lib.blocking_operation("item2"),
@@ -373,9 +375,9 @@ if __name__ == "__main__":
     # Test bidirectional scenario A2
     asyncio.run(test_bidirectional_scenario_a2())
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("🎉 ALL TESTS PASSED!")
-    print("="*60)
+    print("=" * 60)
     print("\nConclusion:")
     print("✅ Auto-detects sync context (no event loop)")
     print("✅ Auto-detects async context (with event loop)")
