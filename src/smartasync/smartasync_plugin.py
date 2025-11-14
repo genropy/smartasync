@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Callable
 from smartswitch import BasePlugin
 
 if TYPE_CHECKING:
-    from smartswitch import Switcher, MethodEntry
+    from smartswitch import MethodEntry, Switcher
 
 
 class SmartasyncPlugin(BasePlugin):
@@ -94,7 +94,9 @@ class SmartasyncPlugin(BasePlugin):
         else:
             info["should_wrap"] = True
 
-    def wrap_handler(self, switch: "Switcher", entry: "MethodEntry", call_next: Callable) -> Callable:
+    def wrap_handler(
+        self, switch: "Switcher", entry: "MethodEntry", call_next: Callable
+    ) -> Callable:
         """Wrap handler with smartasync if needed.
 
         Args:
