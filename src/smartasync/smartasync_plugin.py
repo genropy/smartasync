@@ -6,11 +6,13 @@ allowing SmartSwitch handlers to work seamlessly in both sync and async contexts
 
 from typing import TYPE_CHECKING, Callable
 
+from smartswitch import BasePlugin
+
 if TYPE_CHECKING:
-    from smartswitch import Switcher
+    from smartswitch import Switcher, MethodEntry
 
 
-class SmartasyncPlugin:
+class SmartasyncPlugin(BasePlugin):
     """SmartAsync plugin for SmartSwitch integration.
 
     This plugin enables bidirectional sync/async support for SmartSwitch handlers,
@@ -21,7 +23,8 @@ class SmartasyncPlugin:
         from smartswitch import Switcher
         from smartasync import SmartasyncPlugin
 
-        api = Switcher().plug(SmartasyncPlugin())
+        api = Switcher()
+        api.plug(SmartasyncPlugin)
 
         @api
         async def handler():
@@ -37,7 +40,8 @@ class SmartasyncPlugin:
 
         class StorageManager:
             def __init__(self):
-                self.api = Switcher(prefix='storage_').plug(SmartasyncPlugin())
+                self.api = Switcher(prefix='storage_')
+                self.api.plug(SmartasyncPlugin)
 
             @property
             def node(self):
@@ -62,44 +66,50 @@ class SmartasyncPlugin:
         other tools like smpub that may also apply smartasync.
 
     Notes:
-        - Requires SmartSwitch v0.5.0+ (for plugin system)
+        - Requires SmartSwitch v0.6.0+ (with MethodEntry support)
         - Only wraps async functions; sync functions pass through unchanged
         - Thread-safe and works with all SmartSwitch features
     """
 
-    def on_decorate(self, func: Callable, switcher: "Switcher") -> None:
-        """Hook called when a function is decorated (before wrapping).
+    def on_decore(self, switch: "Switcher", func: Callable, entry: "MethodEntry") -> None:
+        """Hook called when a function is decorated.
 
-        This is a notification hook. It doesn't modify the function,
-        just receives notification that decoration is happening.
-
-        Args:
-            func: The function being decorated
-            switcher: The Switcher instance
-        """
-        # No-op: we don't need to do anything on decoration
-        pass
-
-    def wrap(self, func: Callable, switcher: "Switcher") -> Callable:
-        """Wrap function with smartasync if not already wrapped.
+        Mark whether this function needs smartasync wrapping.
 
         Args:
-            func: The function to potentially wrap
-            switcher: The Switcher instance (unused, for protocol compatibility)
-
-        Returns:
-            The wrapped function, or original if already wrapped or sync
+            switch: The Switcher instance
+            func: The original function being decorated
+            entry: The MethodEntry containing func and metadata
         """
-        # Avoid double-wrapping: check if already has smartasync marker
-        if hasattr(func, "_smartasync_reset_cache"):
-            return func
-
-        # Import here to avoid circular dependency
-        # Only wrap async functions; let sync functions pass through
         import inspect
 
-        from .core import smartasync
-        if not inspect.iscoroutinefunction(func):
-            return func
+        # Store metadata about whether to wrap
+        info = entry.metadata.setdefault("smartasync", {})
 
-        return smartasync(func)
+        # Check if already wrapped or if it's a sync function
+        if hasattr(func, "_smartasync_reset_cache"):
+            info["should_wrap"] = False
+        elif not inspect.iscoroutinefunction(func):
+            info["should_wrap"] = False
+        else:
+            info["should_wrap"] = True
+
+    def wrap_handler(self, switch: "Switcher", entry: "MethodEntry", call_next: Callable) -> Callable:
+        """Wrap handler with smartasync if needed.
+
+        Args:
+            switch: The Switcher instance
+            entry: The MethodEntry containing func and metadata
+            call_next: The next handler in the chain
+
+        Returns:
+            Wrapped handler if async, otherwise pass-through
+        """
+        # Check if we should wrap
+        info = entry.metadata.get("smartasync", {})
+        if not info.get("should_wrap", False):
+            return call_next
+
+        # Wrap with smartasync once
+        from .core import smartasync
+        return smartasync(call_next)

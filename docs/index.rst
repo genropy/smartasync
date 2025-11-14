@@ -46,6 +46,12 @@ SmartAsync provides automatic context detection to seamlessly bridge synchronous
 
 .. toctree::
    :maxdepth: 2
+   :caption: Integrations
+
+   integrations/smartswitch
+
+.. toctree::
+   :maxdepth: 2
    :caption: Advanced Topics
 
    advanced/technical-overview

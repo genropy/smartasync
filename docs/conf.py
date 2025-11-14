@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath('../src'))
 project = 'SmartAsync'
 copyright = '2025, Genropy Team'
 author = 'Genropy Team'
-release = '0.3.0'
+release = '0.4.0'
 
 # -- General configuration ---------------------------------------------------
 
