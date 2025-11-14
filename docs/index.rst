@@ -11,6 +11,7 @@ SmartAsync provides automatic context detection to seamlessly bridge synchronous
    :maxdepth: 2
    :caption: Getting Started
 
+   overview
    user-guide/installation
    user-guide/quickstart
    user-guide/basic
