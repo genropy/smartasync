@@ -2,6 +2,8 @@
 
 import asyncio
 
+import pytest
+
 from smartasync import smartasync
 
 
@@ -213,6 +215,32 @@ def test_error_propagation():
     print("\n✅ ERROR PROPAGATION TEST PASSED!")
 
 
+def test_sync_async_method_when_loop_running(monkeypatch):
+    """Ensure helpful error when asyncio.run() is called while a loop is active.
+
+    Defensive test - simulates unlikely edge case for 100% coverage.
+    """
+    obj = SimpleManager()
+    obj.async_method._smartasync_reset_cache()
+
+    def fake_asyncio_run(coro):
+        try:
+            coro.close()
+        finally:
+            raise RuntimeError(
+                "asyncio.run() cannot be called from a running event loop"
+            )
+
+    monkeypatch.setattr(asyncio, "run", fake_asyncio_run)
+
+    with pytest.raises(RuntimeError) as excinfo:
+        obj.async_method("boom")
+
+    message = str(excinfo.value)
+    assert "Cannot call async_method() synchronously from within an async context" in message
+    assert "Use 'await async_method()' instead." in message
+
+
 async def test_error_propagation_async():
     """Test error propagation in async context."""
     print("\n" + "=" * 60)
@@ -344,6 +372,75 @@ async def test_bidirectional_scenario_a2():
     print("   🎯 Sync legacy code works seamlessly in async context!")
 
 
+def test_standalone_function_sync():
+    """Test standalone async function called from sync context."""
+    print("\n" + "=" * 60)
+    print("TEST 11: Standalone async function (sync context)")
+    print("=" * 60)
+
+    @smartasync
+    async def process_data(x: int, y: int) -> int:
+        """Standalone async function."""
+        await asyncio.sleep(0.01)
+        return x + y
+
+    print("\n1. Call standalone async function from sync context...")
+    result = process_data(5, 3)
+    assert result == 8
+    print(f"   ✓ Result: {result}")
+
+    print("\n✅ STANDALONE FUNCTION (SYNC) TEST PASSED!")
+
+
+async def test_standalone_function_async():
+    """Test standalone async function called from async context."""
+    print("\n" + "=" * 60)
+    print("TEST 12: Standalone async function (async context)")
+    print("=" * 60)
+
+    @smartasync
+    async def fetch_data(value: str) -> str:
+        """Standalone async function."""
+        await asyncio.sleep(0.01)
+        return f"fetched-{value}"
+
+    print("\n1. Call standalone async function from async context...")
+    result = await fetch_data("test")
+    assert result == "fetched-test"
+    print(f"   ✓ Result: {result}")
+
+    print("\n✅ STANDALONE FUNCTION (ASYNC) TEST PASSED!")
+
+
+async def test_standalone_sync_function_in_async():
+    """Test standalone sync function called from async context (offloaded to thread)."""
+    print("\n" + "=" * 60)
+    print("TEST 13: Standalone sync function (async context)")
+    print("=" * 60)
+
+    @smartasync
+    def cpu_intensive(n: int) -> int:
+        """Standalone sync function (simulates CPU-bound work)."""
+        import time
+
+        time.sleep(0.01)
+        return n * n
+
+    print("\n1. Call standalone sync function from async context...")
+    result = await cpu_intensive(7)
+    assert result == 49
+    print(f"   ✓ Result: {result} (executed in thread pool)")
+
+    print("\n2. Multiple concurrent calls...")
+    results = await asyncio.gather(
+        cpu_intensive(2), cpu_intensive(3), cpu_intensive(4)
+    )
+    assert results == [4, 9, 16]
+    print(f"   ✓ Processed {len(results)} items concurrently")
+
+    print("\n✅ STANDALONE SYNC FUNCTION (ASYNC) TEST PASSED!")
+
+
 if __name__ == "__main__":
     # Test sync context
     test_sync_context()
@@ -375,6 +472,11 @@ if __name__ == "__main__":
     # Test bidirectional scenario A2
     asyncio.run(test_bidirectional_scenario_a2())
 
+    # Test standalone functions
+    test_standalone_function_sync()
+    asyncio.run(test_standalone_function_async())
+    asyncio.run(test_standalone_sync_function_in_async())
+
     print("\n" + "=" * 60)
     print("🎉 ALL TESTS PASSED!")
     print("=" * 60)
@@ -386,6 +488,7 @@ if __name__ == "__main__":
     print("✅ Cache reset available")
     print("✅ BIDIRECTIONAL: Async methods work in sync context (asyncio.run)")
     print("✅ BIDIRECTIONAL: Sync methods work in async context (asyncio.to_thread)")
+    print("✅ Works with standalone functions (not just class methods)")
     print("✅ Error propagation works correctly")
     print("✅ Cache is per-method (shared between instances)")
     print("✅ Sync→Async transitions work")

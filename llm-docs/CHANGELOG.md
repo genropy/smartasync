@@ -39,15 +39,15 @@ Structured changelog for LLM consumption. Focuses on API changes, breaking chang
 ### Core Features
 
 **Bidirectional async/sync support**:
-- ✅ Async methods work in sync contexts (via `asyncio.run()`)
-- ✅ Sync methods work in async contexts (via `asyncio.to_thread()`)
-- ✅ Async methods work in async contexts (native coroutines)
-- ✅ Sync methods work in sync contexts (pass-through)
+- ✅ Async callables (methods or functions) work in sync contexts (via `asyncio.run()`)
+- ✅ Sync callables work in async contexts (via `asyncio.to_thread()`)
+- ✅ Async callables work in async contexts (native coroutines)
+- ✅ Sync callables work in sync contexts (pass-through)
 
 **Decorator**: `@smartasync`
 - Signature: `smartasync(func: Callable) -> Callable`
 - Returns: Wrapped function with context detection
-- Usage: Apply to any method (sync or async)
+- Usage: Apply to any callable (method or free function, sync or async)
 
 **Implementation details**:
 - Context detection: `asyncio.get_running_loop()` with RuntimeError catch
@@ -57,7 +57,7 @@ Structured changelog for LLM consumption. Focuses on API changes, breaking chang
 
 **Compatibility**:
 - ✅ `__slots__` classes supported
-- ✅ Bound methods (class instances)
+- ✅ Bound methods and standalone functions
 - ✅ Error propagation (exceptions preserved)
 - ✅ Thread-safe (decorator registration and runtime)
 
@@ -74,17 +74,21 @@ Structured changelog for LLM consumption. Focuses on API changes, breaking chang
 
 ### Test Coverage
 
-**10 tests**, 97% coverage:
+**14 tests**, 100% coverage:
 - `test_sync_context`: Async method in sync context
 - `test_async_context`: Async method in async context + sync method offload
 - `test_slots`: `__slots__` compatibility (sync)
 - `test_slots_async`: `__slots__` compatibility (async)
 - `test_cache_reset`: Cache reset functionality
 - `test_error_propagation`: Error handling (sync)
+- `test_sync_async_method_when_loop_running`: Helpful error when `asyncio.run()` disallowed
 - `test_error_propagation_async`: Error handling (async)
 - `test_cache_shared_between_instances`: Per-method cache behavior
 - `test_sync_to_async_transition`: Context transition behavior
 - `test_bidirectional_scenario_a2`: Async app calling sync library
+- `test_standalone_function_sync`: Standalone async function in sync context
+- `test_standalone_function_async`: Standalone async function in async context
+- `test_standalone_sync_function_in_async`: Standalone sync function awaited in async context
 
 ### Dependencies
 

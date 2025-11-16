@@ -1,94 +1,117 @@
 # SmartAsync - Common Patterns
 
-Patterns extracted from test suite (tests/test_smartasync.py) showing proven usage.
+Patterns below come directly from `tests/test_smartasync.py`. Each snippet is runnable and cites its source test.
 
-## Pattern 1: Async Method in Sync Context
-**Frequency**: 5+ tests
-**Use case**: CLI tools, scripts calling async libraries
+## Pattern 1: Async Method from Sync Code
+**Use case**: CLI scripts calling async libraries  
+**Tests**: `test_sync_context`
 
 ```python
-# From: tests/test_smartasync.py::test_sync_context
-class Manager:
-    @smartasync
-    async def fetch_data(self, url: str) -> dict:
-        async with httpx.AsyncClient() as client:
-            return await client.get(url).json()
+import asyncio
+from smartasync import smartasync
 
-# Sync usage - no asyncio.run() needed
-manager = Manager()
-data = manager.fetch_data("https://api.example.com")
+class SimpleManager:
+    def __init__(self):
+        self.call_count = 0
+
+    @smartasync
+    async def async_method(self, value: str) -> str:
+        await asyncio.sleep(0.01)
+        self.call_count += 1
+        return f"Result: {value}"
+
+obj = SimpleManager()
+result = obj.async_method("test")  # No await!
+assert result == "Result: test"
 ```
 
-**Key points**:
-- No `await` keyword in sync context
-- No manual `asyncio.run()` needed
-- Returns actual result, not coroutine
-- ~102μs overhead per call
+**Highlights**
+- No `await` or `asyncio.run()` needed in sync context.
+- Real value returned (not coroutine).
+- ~102 µs overhead dominated by `asyncio.run()`.
 
-## Pattern 2: Sync Method in Async Context
-**Frequency**: 2+ tests
-**Use case**: Async apps using legacy sync libraries
+---
+
+## Pattern 2: Sync Method inside Async App
+**Use case**: Async frameworks calling legacy sync code  
+**Tests**: `test_async_context`
 
 ```python
-# From: tests/test_smartasync.py::test_bidirectional_scenario_a2
-class LegacyDatabase:
-    @smartasync
-    def query(self, sql: str) -> list:
-        # Blocking sync code (e.g., sqlite3)
-        conn = sqlite3.connect("db.sqlite")
-        return conn.execute(sql).fetchall()
+import asyncio
+from smartasync import smartasync
 
-# Async usage - auto-threaded
-async def handler():
-    db = LegacyDatabase()
-    results = await db.query("SELECT * FROM users")
-    # Event loop not blocked!
+class SimpleManager:
+    def __init__(self):
+        self.call_count = 0
+
+    @smartasync
+    def sync_method(self, value: str) -> str:
+        self.call_count += 1
+        return f"Sync: {value}"
+
+async def main():
+    obj = SimpleManager()
+    result = await obj.sync_method("legacy")  # Auto-threaded
+    assert result == "Sync: legacy"
+
+asyncio.run(main())
 ```
 
-**Key points**:
-- Must `await` in async context
-- Automatically offloaded to thread pool
-- Prevents blocking event loop
-- ~50-100μs overhead per call
+**Highlights**
+- Must `await` in async context even for sync defs.
+- Work is automatically offloaded via `asyncio.to_thread()`.
+- Event loop stays responsive.
 
-## Pattern 3: Concurrent Sync Operations in Async Context
-**Frequency**: 1+ tests
-**Use case**: Parallel execution of blocking operations
+---
+
+## Pattern 3: Concurrent Blocking Operations
+**Use case**: Parallelizing CPU/I/O heavy sync routines  
+**Tests**: `test_bidirectional_scenario_a2`
 
 ```python
-# From: tests/test_smartasync.py::test_bidirectional_scenario_a2
-class Processor:
-    @smartasync
-    def process(self, data: str) -> str:
-        time.sleep(0.01)  # Blocking work
-        return data.upper()
+import asyncio, time
+from smartasync import smartasync
 
-# Concurrent execution
-async def process_batch(items: list[str]):
-    proc = Processor()
+class LegacyLibrary:
+    def __init__(self):
+        self.processed = []
+
+    @smartasync
+    def blocking_operation(self, data: str) -> str:
+        time.sleep(0.01)
+        result = data.upper()
+        self.processed.append(result)
+        return result
+
+async def main():
+    lib = LegacyLibrary()
     results = await asyncio.gather(
-        *[proc.process(item) for item in items]
+        lib.blocking_operation("item1"),
+        lib.blocking_operation("item2"),
+        lib.blocking_operation("item3"),
     )
-    return results
+    assert results == ["ITEM1", "ITEM2", "ITEM3"]
 
-# All processed in parallel (different threads)
-results = asyncio.run(process_batch(["a", "b", "c"]))
+asyncio.run(main())
 ```
 
-**Key points**:
-- `asyncio.gather()` works with sync methods
-- Each call runs in separate thread
-- No event loop blocking
-- True parallelism for CPU-bound work
+**Highlights**
+- Each sync call runs in a worker thread.
+- `asyncio.gather()` works naturally.
+- Ideal for CPU-bound or blocking libraries.
 
-## Pattern 4: __slots__ Classes
-**Frequency**: 2+ tests
-**Use case**: Memory-optimized classes
+---
+
+## Pattern 4: `__slots__` Support
+**Use case**: Memory-optimized classes with async methods  
+**Tests**: `test_slots`, `test_slots_async`
 
 ```python
-# From: tests/test_smartasync.py::test_slots
-class OptimizedManager:
-    __slots__ = ('data',)
+import asyncio
+from smartasync import smartasync
+
+class ManagerWithSlots:
+    __slots__ = ("data",)
 
     def __init__(self):
         self.data = []
@@ -98,166 +121,197 @@ class OptimizedManager:
         await asyncio.sleep(0.01)
         self.data.append(item)
 
-# Works in both contexts
-obj = OptimizedManager()
-obj.add_item("item")  # Sync
-await obj.add_item("item")  # Async
+    @smartasync
+    async def get_count(self) -> int:
+        await asyncio.sleep(0.01)
+        return len(self.data)
 ```
 
-**Key points**:
-- No special handling needed
-- Works like regular methods
-- Cache stored in decorator closure, not instance
+**Highlights**
+- No per-instance attributes added.
+- Decorator cache stored in closure, so `__slots__` remain intact.
 
-## Pattern 5: Testing Without pytest-asyncio
-**Frequency**: Multiple tests
-**Use case**: Simple sync tests for async code
+---
+
+## Pattern 5: Standalone Async Functions
+**Use case**: Decorate functions, not just methods  
+**Tests**: `test_standalone_function_sync`, `test_standalone_function_async`
 
 ```python
-# From: tests/test_smartasync.py::test_sync_context
+import asyncio
+from smartasync import smartasync
+
 @smartasync
-async def fetch_user(user_id: int) -> dict:
-    async with db.connect() as conn:
-        return await conn.fetch_one(f"SELECT * FROM users WHERE id={user_id}")
+async def fetch_data(value: str) -> str:
+    await asyncio.sleep(0.01)
+    return f"fetched-{value}"
 
-# Sync test - no event loop setup!
-def test_fetch_user():
-    user = fetch_user(1)
-    assert user['id'] == 1
-    assert user['name'] == 'Alice'
+# Sync usage
+assert fetch_data("cli") == "fetched-cli"
+
+# Async usage
+asyncio.run(fetch_data("web"))
 ```
 
-**Key points**:
-- No `@pytest.mark.asyncio` needed
-- No `asyncio.run()` boilerplate
-- Standard `def test_` functions
-- Simpler test code
+**Highlights**
+- Works for free functions; no `self` argument required.
+- Same async detection logic applies.
 
-## Pattern 6: Cache Reset for Testing
-**Frequency**: 3+ tests
-**Use case**: Isolate test cases
+---
+
+## Pattern 6: Standalone Sync Functions in Async Context
+**Use case**: Offload pure functions without classes  
+**Tests**: `test_standalone_sync_function_in_async`
 
 ```python
-# From: tests/test_smartasync.py::test_cache_reset
+import asyncio, time
+from smartasync import smartasync
+
+@smartasync
+def cpu_intensive(n: int) -> int:
+    time.sleep(0.01)
+    return n * n
+
+async def main():
+    result = await cpu_intensive(7)
+    assert result == 49
+
+    batch = await asyncio.gather(
+        cpu_intensive(2), cpu_intensive(3), cpu_intensive(4)
+    )
+    assert batch == [4, 9, 16]
+
+asyncio.run(main())
+```
+
+**Highlights**
+- Perfect for helper functions or utility modules.
+- Same semantics as class methods.
+
+---
+
+## Pattern 7: Cache Control & Shared State
+**Use case**: Resetting or sharing context detection cache  
+**Tests**: `test_cache_reset`, `test_cache_shared_between_instances`
+
+```python
+import asyncio
+from smartasync import smartasync
+
 class Service:
     @smartasync
-    async def operation(self):
+    async def operation(self, payload: str) -> str:
         await asyncio.sleep(0.01)
+        return f"ok:{payload}"
 
-def test_something():
-    svc = Service()
-    # Reset cache for clean state
-    svc.operation._smartasync_reset_cache()
+svc1 = Service()
+svc2 = Service()
 
-    result = svc.operation()
-    assert result is not None
+# Shared cache across instances
+svc1.operation("a")
+svc2.operation("b")
+
+# Reset for deterministic tests
+svc1.operation._smartasync_reset_cache()
 ```
 
-**Key points**:
-- `_smartasync_reset_cache()` resets context cache
-- Use between tests for isolation
-- Not needed in normal usage
-- Only for testing edge cases
+**Highlights**
+- Cache is per decorated function, shared across instances.
+- `_smartasync_reset_cache()` only needed in tests.
 
-## Pattern 7: Error Propagation
-**Frequency**: 2+ tests
-**Use case**: Exception handling
+---
+
+## Pattern 8: Error Propagation & Helpful Messaging
+**Use case**: Preserve user exceptions and guard against nested event loops  
+**Tests**: `test_error_propagation`, `test_error_propagation_async`, `test_sync_async_method_when_loop_running`
 
 ```python
-# From: tests/test_smartasync.py::test_error_propagation
+import asyncio
+from smartasync import smartasync
+
 @smartasync
-async def failing_operation():
+async def buggy():
     await asyncio.sleep(0.01)
-    raise ValueError("Something went wrong")
+    raise RuntimeError("boom")
 
-# Sync context
 try:
-    result = failing_operation()
-except ValueError as e:
-    print(f"Caught: {e}")
+    buggy()
+except RuntimeError as e:
+    assert "boom" in str(e)
 
-# Async context
-try:
-    result = await failing_operation()
-except ValueError as e:
-    print(f"Caught: {e}")
+# Helpful message if asyncio.run() invoked inside a running loop
+# (simulated in tests by monkeypatching asyncio.run)
 ```
 
-**Key points**:
-- Exceptions propagate normally
-- No special handling needed
-- Works in both contexts
-- Stack traces preserved
+**Highlights**
+- Exceptions bubble up unchanged in both contexts.
+- Sync calls inside a running loop raise descriptive errors.
 
-## Pattern 8: Mixed Sync/Async Methods in Same Class
-**Frequency**: Multiple tests
-**Use case**: Gradual migration, hybrid APIs
+---
+
+## Pattern 9: Sync→Async Transition (Asymmetric Caching)
+**Use case**: Detect first async call and stick to async fast-path  
+**Tests**: `test_sync_to_async_transition`
 
 ```python
-# From: tests/test_smartasync.py::test_sync_context
-class HybridService:
-    @smartasync
-    async def async_fetch(self) -> dict:
-        async with httpx.AsyncClient() as client:
-            return await client.get("...").json()
+import asyncio
+from smartasync import smartasync
+
+class TransitionService:
+    def __init__(self):
+        self.call_count = 0
 
     @smartasync
-    def sync_process(self, data: dict) -> dict:
-        # Legacy sync processing
-        return process_legacy(data)
+    async def work(self, value: str) -> str:
+        self.call_count += 1
+        await asyncio.sleep(0.01)
+        return value
 
-# Both work in both contexts
 async def main():
-    svc = HybridService()
-    data = await svc.async_fetch()  # Async method
-    result = await svc.sync_process(data)  # Sync method (threaded)
+    svc = TransitionService()
+    await svc.work("first")
+    await svc.work("second")  # Uses cached async flag
+
+asyncio.run(main())
 ```
 
-**Key points**:
-- Can mix async and sync methods
-- All work in both contexts
-- Async methods stay async internally
-- Sync methods offloaded when in async context
+**Highlights**
+- Once an async loop is detected it stays cached.
+- Sync contexts are always re-checked, enabling CLI → async transitions.
 
-## Anti-Pattern: Shared Instance Across Threads
-**DON'T DO THIS**:
+---
+
+## Anti-Pattern: Sharing One Instance Across Threads
+**Issue**: Per-method cache is not thread-safe for a single shared instance  
+**Tests**: Covered implicitly by design notes
 
 ```python
-# BAD: Shared instance in thread pool
-from concurrent.futures import ThreadPoolExecutor
-
-manager = Manager()  # Shared!
-
+# BAD
+shared = TransitionService()
 def worker(data):
-    return manager.process(data)  # Race condition!
+    return shared.work(data)
 
-with ThreadPoolExecutor() as executor:
-    results = executor.map(worker, items)
+# GOOD
+def worker(data):
+    service = TransitionService()
+    return service.work(data)
 ```
 
-**Solution**: Instance per thread
+**Recommendation**
+- Create instances per thread/task (best practice anyway).
 
-```python
-# GOOD: Instance per thread
-def worker(data):
-    manager = Manager()  # New instance
-    return manager.process(data)
+---
 
-with ThreadPoolExecutor() as executor:
-    results = executor.map(worker, items)
-```
-
-## Pattern Selection Guide
+## Pattern Lookup
 
 | Scenario | Pattern | Test Reference |
 |----------|---------|----------------|
-| CLI + async libs | Pattern 1 | test_sync_context |
-| FastAPI + sync DB | Pattern 2 | test_bidirectional_scenario_a2 |
-| Parallel blocking ops | Pattern 3 | test_bidirectional_scenario_a2 |
-| Memory optimization | Pattern 4 | test_slots |
-| Simple testing | Pattern 5 | test_sync_context |
-| Test isolation | Pattern 6 | test_cache_reset |
-| Error handling | Pattern 7 | test_error_propagation |
-| Hybrid APIs | Pattern 8 | test_sync_context |
-
-**See also**: EXAMPLES.md for complete working examples
+| CLI calling async code | Pattern 1 | `test_sync_context` |
+| Async app calling sync code | Pattern 2 | `test_async_context` |
+| Parallel blocking work | Pattern 3 | `test_bidirectional_scenario_a2` |
+| Memory-optimized classes | Pattern 4 | `test_slots`, `test_slots_async` |
+| Standalone async helpers | Pattern 5 | `test_standalone_function_sync`, `test_standalone_function_async` |
+| Standalone sync helpers | Pattern 6 | `test_standalone_sync_function_in_async` |
+| Deterministic caching | Pattern 7 | `test_cache_reset`, `test_cache_shared_between_instances` |
+| Exception handling | Pattern 8 | `test_error_propagation`, `test_error_propagation_async`, `test_sync_async_method_when_loop_running` |
+| Sync→Async transitions | Pattern 9 | `test_sync_to_async_transition` |

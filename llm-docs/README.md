@@ -1,5 +1,23 @@
 # SmartAsync - LLM Documentation
 
+> **LLM instructions**  
+> 1. Read this README completely first.  
+> 2. Open additional files *only if the task requires them*:  
+>    - `QUICKSTART.md` → onboarding + minimal example  
+>    - `API.yaml` → authoritative signatures/behaviors/tests  
+>    - `PATTERNS.md` → reusable scenarios  
+>    - `EXAMPLES.md` → full snippets (all from tests)  
+>    - `CHANGELOG.md` → version history + coverage numbers  
+> 3. Always cite the referenced test (each snippet lists it).  
+> 4. If something is missing, state it—do **not** invent APIs.
+
+**Recommended system prompt snippet**
+```
+Before answering, read llm-docs/README.md. Only open other llm-docs files if the question requires them. 
+Quote the relevant test case for every code example. 
+If the docs lack the needed info, explicitly say so instead of guessing.
+```
+
 This directory contains **LLM-optimized documentation** for SmartAsync, designed for efficient consumption by Large Language Models.
 
 ## Why LLM Docs?
@@ -17,15 +35,16 @@ Traditional human documentation is:
 
 ## File Structure
 
-| File | Purpose | Size | Content |
-|------|---------|------|---------|
-| **QUICKSTART.md** | 30-second guide | ~60 lines | Core concept + basic usage |
-| **API.yaml** | Complete API reference | ~200 lines | Structured, machine-readable |
-| **PATTERNS.md** | Common usage patterns | ~150 lines | 8 patterns + anti-patterns |
-| **EXAMPLES.md** | Working code examples | ~440 lines | 9 complete examples from tests |
-| **CHANGELOG.md** | Version history | ~180 lines | API changes, features, breaking changes |
+| File | Purpose | Highlights |
+|------|---------|------------|
+| **README.md** | Navigation + instructions | How to consume docs efficiently |
+| **QUICKSTART.md** | 30-second guide | Install, core idea, dual-context example |
+| **API.yaml** | Complete API reference | Signatures, behaviors, caching, tests |
+| **PATTERNS.md** | Common scenarios | 9 tested patterns + anti-pattern |
+| **EXAMPLES.md** | Working code | 10 runnable snippets straight from tests |
+| **CHANGELOG.md** | Version history | Features, coverage, compatibility notes |
 
-**Total**: ~1030 lines (LLM docs) vs. ~2500+ lines (human docs) → **~60% reduction**
+**Total**: ~1K dense lines vs. ~2.5K human-doc lines → **≈60% token reduction**
 
 ## Quick Navigation
 
@@ -36,17 +55,17 @@ Start with: **QUICKSTART.md** (30 seconds to understand SmartAsync)
 Go to: **API.yaml** (complete structured reference)
 
 ### For Common Use Cases
-Read: **PATTERNS.md** (8 patterns extracted from tests)
+Read: **PATTERNS.md** (tested scenarios + anti-pattern)
 
 ### For Complete Examples
-See: **EXAMPLES.md** (9 runnable examples with test references)
+See: **EXAMPLES.md** (10 runnable snippets with test references)
 
 ### For Version Changes
 Check: **CHANGELOG.md** (v0.1.0 feature list)
 
 ## Key Features (Quick Reference)
 
-**What it does**: Bidirectional decorator for methods working in both sync and async contexts
+**What it does**: Bidirectional decorator for methods and standalone functions working in both sync and async contexts
 
 **Core behavior**:
 - Async method in sync context → `asyncio.run()`
@@ -60,7 +79,7 @@ Check: **CHANGELOG.md** (v0.1.0 feature list)
 
 **Python**: 3.10+ (uses pattern matching)
 
-**Test coverage**: 97% (10 tests)
+**Test coverage**: 100% (14 tests, `tests/test_smartasync.py`)
 
 ## Usage Pattern
 
@@ -85,7 +104,7 @@ async def handler():
 
 ## Source of Truth
 
-All examples are extracted from **tests/test_smartasync.py** (391 lines, 10 tests, 97% coverage).
+All examples are extracted from **tests/test_smartasync.py** (495 lines, 14 tests, 100% coverage).
 
 Every example has explicit test reference:
 ```markdown

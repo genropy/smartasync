@@ -6,39 +6,45 @@ dependencies: []
 
 decorators:
   smartasync:
-    brief: Bidirectional decorator for methods working in both sync and async contexts
+    brief: Bidirectional decorator for methods and standalone functions working in both sync and async contexts
     location: src/smartasync/core.py
 
     signature: "@smartasync"
 
     applies_to:
-      - async methods (async def)
-      - sync methods (def)
+      - async methods/functions (async def)
+      - sync methods/functions (def)
 
     behavior:
       async_method_sync_context:
-        desc: Async method called from sync context (no event loop)
+        desc: Async callable called from sync context (no event loop)
         action: Executes with asyncio.run()
         overhead: ~102μs
-        test_ref: tests/test_smartasync.py::test_sync_context
+        test_ref:
+          - tests/test_smartasync.py::test_sync_context
+          - tests/test_smartasync.py::test_standalone_function_sync
 
       async_method_async_context:
-        desc: Async method called from async context (event loop running)
+        desc: Async callable called from async context (event loop running)
         action: Returns coroutine (must await)
         overhead: ~1.3μs (cached) or ~2.3μs (first call)
-        test_ref: tests/test_smartasync.py::test_async_context
+        test_ref:
+          - tests/test_smartasync.py::test_async_context
+          - tests/test_smartasync.py::test_standalone_function_async
 
       sync_method_sync_context:
-        desc: Sync method called from sync context
+        desc: Sync callable called from sync context
         action: Direct call (pass-through)
         overhead: negligible
         test_ref: tests/test_smartasync.py::test_sync_context
 
       sync_method_async_context:
-        desc: Sync method called from async context
+        desc: Sync callable called from async context
         action: Offloads to thread pool with asyncio.to_thread()
         overhead: ~50-100μs
-        test_ref: tests/test_smartasync.py::test_bidirectional_scenario_a2
+        test_ref:
+          - tests/test_smartasync.py::test_bidirectional_scenario_a2
+          - tests/test_smartasync.py::test_standalone_sync_function_in_async
 
     example_async: |
       # From: tests/test_smartasync.py::test_sync_context
@@ -68,6 +74,20 @@ decorators:
       async def main():
           lib = LegacyLib()
           result = await lib.blocking_operation("test")  # "TEST"
+
+    example_standalone: |
+      # From: tests/test_smartasync.py::test_standalone_function_sync
+      @smartasync
+      async def fetch_data(value: str) -> str:
+          await asyncio.sleep(0.01)
+          return f"fetched-{value}"
+
+      # Sync usage
+      data = fetch_data("cli")
+
+      # Async usage
+      async def main():
+          data = await fetch_data("web")
 
     caching:
       strategy: Asymmetric

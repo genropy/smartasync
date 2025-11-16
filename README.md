@@ -26,6 +26,7 @@ SmartAsync allows you to write async methods once and call them in both sync and
 - ✅ **Automatic context detection**: Detects sync vs async execution context at runtime
 - ✅ **Zero configuration**: Just apply the `@smartasync` decorator
 - ✅ **Asymmetric caching**: Smart caching strategy for optimal performance
+- ✅ **Class methods & standalone functions**: Decorate any callable (`def` or `async def`)
 - ✅ **Compatible with `__slots__`**: Works with memory-optimized classes
 - ✅ **Pure Python**: No dependencies beyond standard library
 
@@ -59,6 +60,24 @@ async def main():
     data = await manager.fetch_data("https://api.example.com/data")
 
 asyncio.run(main())
+```
+
+### Standalone function example
+
+You can also decorate free functions—no class required:
+
+```python
+@smartasync
+async def fetch_json(url: str) -> dict:
+    async with httpx.AsyncClient() as client:
+        return await client.get(url).json()
+
+# Sync context
+data = fetch_json("https://api.example.com")
+
+# Async context
+async def main():
+    data = await fetch_json("https://api.example.com")
 ```
 
 ## How It Works

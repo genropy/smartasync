@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "smartasync"
-version = "0.4.0"
+version = "0.5.0"
 description = "Unified sync/async API decorator with automatic context detection"
 authors = [
     {name = "Giovanni Porcari", email = "softwell@softwell.it"},
@@ -72,6 +72,7 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --cov=smartasync --cov-report=term-missing --cov-report=html --cov-report=xml"
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 
 [tool.black]
 line-length = 100

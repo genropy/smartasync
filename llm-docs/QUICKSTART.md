@@ -10,6 +10,7 @@ Bidirectional decorator: write async code once, call from sync OR async contexts
 
 ## Basic Usage
 ```python
+import asyncio
 from smartasync import smartasync
 
 class Manager:
@@ -29,11 +30,27 @@ async def main():
 ```
 *From: tests/test_smartasync.py::test_sync_context, test_async_context*
 
+### Standalone Functions
+```python
+import asyncio
+from smartasync import smartasync
+
+@smartasync
+async def fetch(value: str) -> str:
+    await asyncio.sleep(0.01)
+    return f"Result: {value}"
+
+result = fetch("sync-call")      # Sync context
+result_async = await fetch("async-call")  # Async context
+```
+*From: tests/test_smartasync.py::test_standalone_function_sync, test_standalone_function_async*
+
 ## Key Features
-- **Bidirectional**: Async methods work in sync context (uses `asyncio.run()`), sync methods work in async context (uses `asyncio.to_thread()`)
+- **Bidirectional**: Async callables work in sync context (uses `asyncio.run()`), sync callables work in async context (uses `asyncio.to_thread()`)
 - **Zero config**: Just add `@smartasync` decorator
 - **Auto-detection**: Runtime context detection via `asyncio.get_running_loop()`
 - **Performance**: ~1-2μs overhead in async context (cached), ~100μs in sync context
+- **Standalone friendly**: Works for free functions and class methods alike
 - **__slots__ compatible**: Works with memory-optimized classes
 
 ## Critical Behaviors
