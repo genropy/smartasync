@@ -33,7 +33,6 @@ dev = [
     "black>=23.0.0",
     "ruff>=0.1.0",
     "mypy>=1.0.0",
-    "smartswitch>=0.4.0",
 ]
 docs = [
     "sphinx>=8.0.0",
@@ -49,7 +48,6 @@ all = [
     "black>=23.0.0",
     "ruff>=0.1.0",
     "mypy>=1.0.0",
-    "smartswitch>=0.4.0",
     "sphinx>=8.0.0",
     "sphinx-rtd-theme>=3.0.0",
     "sphinx-autodoc-typehints>=3.0.0",

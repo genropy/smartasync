@@ -3,8 +3,7 @@
 Provides transparent sync/async method calling with automatic context detection.
 """
 
-from .core import smartasync
-from .smartasync_plugin import SmartasyncPlugin
+from .core import smartasync, wrapper
 
 __version__ = "0.4.0"
-__all__ = ["smartasync", "SmartasyncPlugin"]
+__all__ = ["smartasync", "wrapper"]
